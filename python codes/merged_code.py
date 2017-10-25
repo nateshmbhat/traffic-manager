@@ -56,6 +56,7 @@ def take_commands_from_app(sapp):
 
 
 def mailsending(message=None):
+    global total_number_red_bypasses ;
     if message is None:
         msg = MIMEMultipart();
         if os.path.isfile("bypass.jpg"):
@@ -165,6 +166,7 @@ def wait_for_node_mcu(snode):
 
 def recvdata(node, img=None):
     global global_frame;
+    global total_number_red_bypasses
     while (1):
         data = "";
         char = "";
@@ -305,8 +307,8 @@ while (1):
         for (x, y, j, k) in cars:
             cv2.rectangle(frame, (x, y), (x + j, y + k), (0, 255, 0), 2);
 
-        # cv2.imshow("Security Feed", frame)
-        # if cv2.waitKey(1)==ord('q'):break;
+        cv2.imshow("Security Feed", frame)
+        if cv2.waitKey(1)==ord('q'):break;
 
 
 
