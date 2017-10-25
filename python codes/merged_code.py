@@ -336,5 +336,7 @@ while (1):
             snode.close();
             sapp.close() ;
             s.close() ;
-        finally:
+        except:
             exit(100) ;
+        finally:
+            exit(10) ;
