@@ -332,6 +332,9 @@ while (1):
 
     except(KeyboardInterrupt):
         print("\nINTERRUPTED BY USER !!! EXITING");
-        snode.close();
-        sapp.close() ;
-        sys.exit(100) ;
+        try:
+            snode.close();
+            sapp.close() ;
+            s.close() ;
+        finally:
+            exit(100) ;
