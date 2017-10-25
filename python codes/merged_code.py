@@ -11,6 +11,7 @@ import os
 from email.mime.image import MIMEImage;
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import pandas
 
 import cv2
 
@@ -164,6 +165,7 @@ def wait_for_node_mcu(snode):
 
 
 
+
 def recvdata(node, img=None):
     global global_frame;
     global total_number_red_bypasses
@@ -243,7 +245,6 @@ def temporary_Funtion_to_check_image_processing():
 
 
 
-
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
 s.connect(("10.255.255.255", 0));
 ref = s.getsockname()[0]
@@ -307,9 +308,8 @@ while (1):
         for (x, y, j, k) in cars:
             cv2.rectangle(frame, (x, y), (x + j, y + k), (0, 255, 0), 2);
 
-        cv2.imshow("Security Feed", frame)
-        if cv2.waitKey(1)==ord('q'):break;
-
+        # cv2.imshow("Security Feed", frame)
+        # if cv2.waitKey(1)==ord('q'):break;
 
 
         print("Vehicles detected : ", len(cars))
@@ -332,4 +332,4 @@ while (1):
     except(KeyboardInterrupt):
         print("\nINTERRUPTED BY USER !!! EXITING");
         s.close();
-        break;
+        exit(0) ;
