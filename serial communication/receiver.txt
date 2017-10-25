@@ -1,0 +1,26 @@
+char mystr[60]; //Initialized variable to store recieved data
+String str;
+void setup() {
+  // Begin the Serial at 9600 Baud
+  Serial.begin(115200);
+}
+String s;
+void loop() {
+  while(Serial.available())
+    {
+      char ch=Serial.read();
+      s.concat(ch);
+    }
+    if(s.startsWith("Hello"))
+    Serial.println(s);
+    delay(100) ; 
+    s="" ;
+    
+}
+
+
+
+
+
+
+
