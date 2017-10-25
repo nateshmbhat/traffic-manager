@@ -8,6 +8,7 @@ import threading
 import smtplib
 import time
 import os
+import sys
 from email.mime.image import MIMEImage;
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -331,5 +332,6 @@ while (1):
 
     except(KeyboardInterrupt):
         print("\nINTERRUPTED BY USER !!! EXITING");
-        s.close();
-        exit(0) ;
+        snode.close();
+        sapp.close() ;
+        sys.exit(100) ;
