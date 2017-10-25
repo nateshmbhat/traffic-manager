@@ -53,6 +53,8 @@ def take_commands_from_app(sapp):
             mailsending();
 
 
+
+
 def mailsending(message=None):
     if message is None:
         msg = MIMEMultipart();
@@ -114,6 +116,9 @@ Number of vehicles which bypasses the signal : {}""".format(time.asctime(), int(
             print("Connection Error ! Password is wrong or internet is not connected");
 
 
+
+
+
 def smssending(message):
     from twilio.rest import Client;
     try:
@@ -127,6 +132,8 @@ def smssending(message):
         print("Coudn't send SMS. Check your internet connection ! ");
 
 
+
+
 def node_mcu_signals_manage():
     global flag_stop_usual_signal_loop
     while (1):
@@ -137,8 +144,10 @@ def node_mcu_signals_manage():
                 if flag_stop_usual_signal_loop:
                     break;
             continue;
-        sleep(7);
+        sleep(10);
         flag_stop_usual_signal_loop = False;
+
+
 
 
 def wait_for_node_mcu(snode):
@@ -151,6 +160,7 @@ def wait_for_node_mcu(snode):
 
     threading.Thread(target=recvdata, args=[node]).start();
     node_mcu_signals_manage();
+
 
 
 def recvdata(node, img=None):
@@ -175,6 +185,8 @@ def recvdata(node, img=None):
 
         print("Data Received from ", data);
         if not len(data): break;
+
+
 
 
 def temporary_Funtion_to_check_image_processing():
@@ -228,6 +240,8 @@ def temporary_Funtion_to_check_image_processing():
 
 
 
+
+
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
 s.connect(("10.255.255.255", 0));
 ref = s.getsockname()[0]
@@ -255,11 +269,17 @@ threading.Thread(target=wait_for_node_mcu, args=[snode]).start();
 # exit(0) ;
 
 
+
+
 while (1):
     try:
 
         frame = cap.read()
-        if not frame[0]:break
+
+        if not frame[0]:
+            print("\n\n\n\n>>>>>\nVIDEO COMPLETED !!! \n>>>>>>") ;
+            cap = cv2.VideoCapture("cars1.avi") ;
+            continue ;
         else:
             frame = frame[1]
 
@@ -285,6 +305,9 @@ while (1):
         for (x, y, j, k) in cars:
             cv2.rectangle(frame, (x, y), (x + j, y + k), (0, 255, 0), 2);
 
+        # cv2.imshow("Security Feed", frame)
+        # if cv2.waitKey(1)==ord('q'):break;
+
 
 
         print("Vehicles detected : ", len(cars))
@@ -299,13 +322,6 @@ while (1):
 
     # for(x,y,j,k) in cars:
     #     cv2.rectangle(frame , (x, y) , (x+j , y+k) , (0,255 , 0) , 2) ;
-
-    # cv2.imshow("Security Feed", frame)
-
-    # while(1):
-    # 	if cv2.waitKey(1)==ord('q'):
-    # 		break;
-    # 	sleep(0.1) ;
 
 
     # cv2.destroyAllWindows() ;
