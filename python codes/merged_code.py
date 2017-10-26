@@ -1,4 +1,3 @@
-
 from time import sleep
 import numpy as np
 import socket
@@ -14,13 +13,16 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import pandas
 
+
 import cv2
+
 
 face_cascade = cv2.CascadeClassifier(r"frontalface_default.xml");
 walker_data = cv2.CascadeClassifier(r"pedestrian.xml")
 car_data = cv2.CascadeClassifier(r"cars.xml")
 # bike_data = cv2.CascadeClassifier(r"C:\users\Natesh\Documents\motorbike.xml")
 # cycle_data =  cv2.CascadeClassifier(r"C:\users\Natesh\Documents\bicycle.xml")
+
 
 
 cap = cv2.VideoCapture(r"cars1.avi")
@@ -34,6 +36,8 @@ print("\nConnected to server.\n") ;
 flag_stop_usual_signal_loop = False;
 total_number_red_bypasses = 0;
 vehicles_count = [];
+present_vehicle_count = 0 ;
+
 global_frame = None;
 
 
@@ -59,6 +63,7 @@ def take_commands_from_app(sapp):
 
 def mailsending(message=None):
     global total_number_red_bypasses ;
+    global present_vehicle_count ;
     if message is None:
         msg = MIMEMultipart();
         if os.path.isfile("bypass.jpg"):
@@ -71,9 +76,10 @@ def mailsending(message=None):
 Traffic Report :\n
 Date and Time : {}
 Average number of vehicles : {}
+Number of vehicles in the current frame : {}
 
-Number of vehicles which bypasses the signal : {}""".format(time.asctime(), int(
-            sum(vehicles_count) / (len(vehicles_count) if len(vehicles_count) else 1)), total_number_red_bypasses))
+Number of vehicles which bypassed the signal : {}""".format(time.asctime(), int(
+            sum(vehicles_count) / (len(vehicles_count) if len(vehicles_count) else 1)), present_vehicle_count ,total_number_red_bypasses))
 
         msg.attach(text);
         if (os.path.isfile("bypass.jpg")):
@@ -103,7 +109,7 @@ Traffic Report :\n
 Date and Time : {}
 Average number of vehicles : {}
 
-Number of vehicles which bypasses the signal : {}""".format(time.asctime(), int(
+Number of vehicles which bypassed the signal : {}""".format(time.asctime(), int(
                 sum(vehicles_count) / (len(vehicles_count) if len(vehicles_count) else 1)), total_number_red_bypasses);
 
             obj = smtplib.SMTP("smtp.gmail.com", 587);
@@ -128,6 +134,7 @@ def smssending(message):
         client = Client("ACbd6f505b95082979dc6c0a74d5a81393", "df56a2ea3929758b6fcda6b75d8b7343");
         client.messages.create(to="+919481575049", from_="+19137474599", body=message);
         print("Message sent successfully");
+
     except(KeyboardInterrupt):
         print("Program terminated by user ! ");
         exit();
@@ -147,7 +154,11 @@ def node_mcu_signals_manage():
                 if flag_stop_usual_signal_loop:
                     break;
             continue;
-        sleep(10);
+
+        if(present_vehicle_count==6)
+            sleep(10);
+        if(present_vehicle_count==7)
+            sleep(13) ;
         flag_stop_usual_signal_loop = False;
 
 
@@ -232,9 +243,9 @@ def temporary_Funtion_to_check_image_processing():
         for (x, y, j, k) in cars:
             cv2.rectangle(frame, (x, y), (x + j, y + k), (0, 255, 0), 2);
 
-        # cv2.imshow('image', frame);
-        # if (cv2.waitKey(1) == ord('q')):
-        #     break;
+        cv2.imshow('image', frame);
+        if (cv2.waitKey(1) == ord('q')):
+            break;
 
         if (len(cars) >= 6):
             if ('node' in globals()):
@@ -277,6 +288,7 @@ threading.Thread(target=wait_for_node_mcu, args=[snode]).start();
 
 while (1):
     try:
+        sleep(0.1) ;
 
         frame = cap.read()
 
@@ -306,14 +318,17 @@ while (1):
 
         cars = car_data.detectMultiScale(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), 1.1, 1);
 
+        present_vehicle_count = len(cars) ;
+
         for (x, y, j, k) in cars:
             cv2.rectangle(frame, (x, y), (x + j, y + k), (0, 255, 0), 2);
 
-        # cv2.imshow("Security Feed", frame)
-        # if cv2.waitKey(1)==ord('q'):break;
+        cv2.imshow("Security Feed", frame)
+        if cv2.waitKey(1)==ord('q'):break;
 
 
         print("Vehicles detected : ", len(cars))
+
 
         if (len(cars) >= 6):
             if ('node' in globals()):
@@ -326,16 +341,15 @@ while (1):
     # for(x,y,j,k) in cars:
     #     cv2.rectangle(frame , (x, y) , (x+j , y+k) , (0,255 , 0) , 2) ;
 
-
     # cv2.destroyAllWindows() ;
 
 
     except(KeyboardInterrupt):
         print("\nINTERRUPTED BY USER !!! EXITING");
         try:
-            snode.close();
-            sapp.close() ;
-            s.close() ;
+            snode.close()   ;
+            sapp.close()    ;
+            s.close()       ;
         except:
             exit(100) ;
         finally:
