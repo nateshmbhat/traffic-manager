@@ -25,7 +25,7 @@ car_data = cv2.CascadeClassifier(r"cars.xml")
 
 
 
-cap = cv2.VideoCapture(r"cars1.avi")
+cap = cv2.VideoCapture(r"cars2.avi")
 #cap = cv2.VideoCapture(0) ;
 
 print("\nConnected to server.\n") ;
@@ -144,8 +144,10 @@ def smssending(message):
 
 
 
+
 def node_mcu_signals_manage():
     global flag_stop_usual_signal_loop
+    global present_vehicle_count ;
     while (1):
         if (not flag_stop_usual_signal_loop):
             for i in ["A", "B", "C", "D"]:
@@ -155,11 +157,13 @@ def node_mcu_signals_manage():
                     break;
             continue;
 
-        if(present_vehicle_count==6)
+        print("\n\n\n--------------------\nHIGH TRAFFIC DETECTED !!!\n--------------------\n\n");
+        if(present_vehicle_count==5):
             sleep(10);
-        if(present_vehicle_count==7)
+        if(present_vehicle_count==7):
             sleep(13) ;
         flag_stop_usual_signal_loop = False;
+
 
 
 
@@ -174,7 +178,6 @@ def wait_for_node_mcu(snode):
 
     threading.Thread(target=recvdata, args=[node]).start();
     node_mcu_signals_manage();
-
 
 
 
@@ -330,7 +333,7 @@ while (1):
         print("Vehicles detected : ", len(cars))
 
 
-        if (len(cars) >= 6):
+        if (len(cars) >= 5):
             if ('node' in globals()):
                 node.send("G".encode());
             flag_stop_usual_signal_loop = True;
