@@ -189,9 +189,9 @@ def node_mcu_signals_manage():
             continue;
 
         print("\n\n\n--------------------\nHIGH TRAFFIC DETECTED !!!\n--------------------\n\n");
-        if(present_vehicle_count==5):
+        if(present_vehicle_count==6):
             sleep(10);
-        if(present_vehicle_count==7):
+        if(present_vehicle_count==8):
             sleep(13) ;
         flag_stop_usual_signal_loop = False;
 
@@ -365,7 +365,7 @@ while (1):
         print("Vehicles detected : ", len(cars))
 
 
-        if (len(cars) >= 5):
+        if (len(cars) >= 6):
             if ('node' in globals()):
                 node.send("G".encode());
             flag_stop_usual_signal_loop = True;
