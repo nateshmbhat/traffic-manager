@@ -3,8 +3,8 @@ import numpy as np
 import socket
 import pickle
 import struct
+from pandas import DataFrame
 import threading
-import pytesseract
 import smtplib
 import time
 import os
@@ -12,15 +12,15 @@ import sys
 from email.mime.image import MIMEImage;
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import pandas
-
-
 import cv2
 
 
 face_cascade = cv2.CascadeClassifier(r"frontalface_default.xml");
 walker_data = cv2.CascadeClassifier(r"pedestrian.xml")
 car_data = cv2.CascadeClassifier(r"cars.xml")
+
+
+
 # bike_data = cv2.CascadeClassifier(r"C:\users\Natesh\Documents\motorbike.xml")
 # cycle_data =  cv2.CascadeClassifier(r"C:\users\Natesh\Documents\bicycle.xml")
 
@@ -53,11 +53,35 @@ def take_commands_from_app(sapp):
     while (1):
         msg = app.recv(4096).decode();
 
+        if not msg:
+            break ;
         print("CLIENT SENT : {}".format(msg));
 
         if "sendmail" in msg:
             print("Sending mail ...")
             mailsending();
+
+
+    take_commands_from_app(sapp) ;
+
+
+
+def save_excel(average_vehicle_count):
+    global total_number_red_bypasses
+    global present_vehicle_count
+
+    # total_number_red_bypasses = 10
+    # present_vehicle_count = 20 ;
+
+
+    df = DataFrame({"Date and Time": time.asctime(), "Average_vehicle_count": [average_vehicle_count],
+                    "Current Vehicle count": present_vehicle_count,
+                    "Number_of_red_signal_bypassers": total_number_red_bypasses})  ;
+
+
+    myheader = False if os.path.isfile("Traffic data.csv") else True ;
+
+    df.to_csv("Traffic data.csv" , mode='a', index=False , header=myheader);
 
 
 
@@ -73,16 +97,22 @@ def mailsending(message=None):
         msg['From'] = "Intel Control Board"
         msg['To'] = "Traffic management"
 
+
+        average_vehicle_count = int(sum(vehicles_count) / (len(vehicles_count) if len(vehicles_count) else 1))
+
+        save_excel(average_vehicle_count) ;
+
         text = MIMEText("""
 Traffic Report :\n
 Date and Time : {}
 Average number of vehicles : {}
 Number of vehicles in the current frame : {}
 
-Number of vehicles which bypassed the signal : {}""".format(time.asctime(), int(
-            sum(vehicles_count) / (len(vehicles_count) if len(vehicles_count) else 1)), present_vehicle_count ,total_number_red_bypasses))
+Number of vehicles which bypassed the signal : {}""".format(time.asctime(), average_vehicle_count, present_vehicle_count ,total_number_red_bypasses))
+
 
         msg.attach(text);
+
         if (os.path.isfile("bypass.jpg")):
             image = MIMEImage(img_data, name="{}".format(time.asctime()));
             msg.attach(image)
@@ -261,21 +291,22 @@ def temporary_Funtion_to_check_image_processing():
 
 
 
+
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
 s.connect(("10.255.255.255", 0));
-ref = s.getsockname()[0]
+myip = s.getsockname()[0]
 
 snode = socket.socket();
 snode.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-snode.bind((ref, 34569));  # DATA SENDING TO NODE MCU
+snode.bind((myip, 34569));  # DATA SENDING TO NODE MCU
 
-sapp = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
+
 sapp = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
 sapp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-sapp.bind((ref, 8888));
+sapp.bind((myip, 8888));
 
-print("\nNODE MCU server ip : {}\nPort : {}\n".format(ref, 34569));
-print("\nAPP server ip : {} \nPort : {}\n".format(ref, 8888));
+print("\nNODE MCU server ip : {}\nPort : {}\n".format(myip, 34569));
+print("\nAPP server ip : {} \nPort : {}\n".format(myip, 8888));
 
 sapp.listen(20);
 snode.listen(100)
