@@ -277,9 +277,9 @@ def temporary_Funtion_to_check_image_processing():
         for (x, y, j, k) in cars:
             cv2.rectangle(frame, (x, y), (x + j, y + k), (0, 255, 0), 2);
         #
-        cv2.imshow('image', frame);
-        if (cv2.waitKey(1) == ord('q')):
-            break;
+        # cv2.imshow('image', frame);
+        # if (cv2.waitKey(1) == ord('q')):
+        #     break;
 
         if (len(cars) >= 6):
             if ('node' in globals()):
@@ -358,8 +358,8 @@ while (1):
         for (x, y, j, k) in cars:
             cv2.rectangle(frame, (x, y), (x + j, y + k), (0, 255, 0), 2);
 
-        cv2.imshow("Security Feed", frame)
-        if cv2.waitKey(1)==ord('q'):break;
+        # cv2.imshow("Security Feed", frame)
+        # if cv2.waitKey(1)==ord('q'):break;
 
 
         print("Vehicles detected : ", len(cars))
