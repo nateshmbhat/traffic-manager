@@ -15,22 +15,15 @@ from email.mime.text import MIMEText
 import cv2
 
 
-face_cascade = cv2.CascadeClassifier(r"frontalface_default.xml");
-walker_data = cv2.CascadeClassifier(r"pedestrian.xml")
-car_data = cv2.CascadeClassifier(r"cars.xml")
+face_cascade = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__) , 'testdata' , "frontalface_default.xml")) ; 
+walker_data = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__) , 'testdata' , "pedestrian.xml")) ; 
+car_data = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__) , 'testdata' ,  "cars.xml")) ; 
 
 
-
-# bike_data = cv2.CascadeClassifier(r"C:\users\Natesh\Documents\motorbike.xml")
-# cycle_data =  cv2.CascadeClassifier(r"C:\users\Natesh\Documents\bicycle.xml")
-
-
-
-cap = cv2.VideoCapture(r"cars2.avi")
+cap = cv2.VideoCapture(os.path.join(os.path.dirname(__file__) , 'testvideos' , "cars2.avi")) ; 
 #cap = cv2.VideoCapture(0) ;
 
 print("\nConnected to server.\n") ;
-
 
 
 
@@ -245,10 +238,10 @@ def temporary_Funtion_to_check_image_processing():
     global global_frame
     time.sleep(10);
 
-    cap = cv2.VideoCapture(r"cars1.avi");
+    cap = cv2.VideoCapture(os.path.join(os.path.dirname(__file__) , 'testvideos' , 'cars1.avi')) ; 
 
     while (1):
-        sleep(10);
+        sleep(0.1);
 
         ret, frame = cap.read();
         global_frame = frame;
@@ -256,8 +249,6 @@ def temporary_Funtion_to_check_image_processing():
             print("\n\n\n\nVIDEO FULLY COMPLETED \n\n\n\n");
             break;
 
-        walker_data = cv2.CascadeClassifier(r"pedestrian.xml")
-        car_data = cv2.CascadeClassifier(r"cars.xml")
 
         # PEDESTRIAN DETECTION
 
@@ -276,10 +267,10 @@ def temporary_Funtion_to_check_image_processing():
 
         for (x, y, j, k) in cars:
             cv2.rectangle(frame, (x, y), (x + j, y + k), (0, 255, 0), 2);
-        #
-        # cv2.imshow('image', frame);
-        # if (cv2.waitKey(1) == ord('q')):
-        #     break;
+        
+        cv2.imshow('image', frame);
+        if (cv2.waitKey(1) == ord('q')):
+            break;
 
         if (len(cars) >= 6):
             if ('node' in globals()):
@@ -315,7 +306,7 @@ threading.Thread(target=take_commands_from_app, args=[sapp]).start();
 threading.Thread(target=wait_for_node_mcu, args=[snode]).start();
 
 # COMMENT THE BELOW TWO LINES WHEN PUTTING INTO INTEL EDISON
-# temporary_Funtion_to_check_image_processing() ; #ONLY USE THIS IF YOU ARE CHECKING THE WORKING FROM YOUR PC AND NOT SENDING THE IMAGE DATA TO INTEL
+temporary_Funtion_to_check_image_processing() ; #ONLY USE THIS IF YOU ARE CHECKING THE WORKING FROM YOUR PC AND NOT SENDING THE IMAGE DATA TO INTEL
 # exit(0) ;
 
 
@@ -335,10 +326,6 @@ while (1):
             frame = frame[1]
 
         global_frame = frame
-
-        walker_data = cv2.CascadeClassifier(r"pedestrian.xml")
-        car_data = cv2.CascadeClassifier(r"cars.xml")
-
         # PEDESTRIAN DETECTION
 
         ped = walker_data.detectMultiScale(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), 3, 5);
