@@ -5,15 +5,14 @@ import struct
 import socket
 import cv2
 
-face_cascade = cv2.CascadeClassifier(r"frontalface_default.xml");
-walker_data = cv2.CascadeClassifier(r"pedestrian.xml")
-car_data = cv2.CascadeClassifier(r"cars.xml")
-# bike_data = cv2.CascadeClassifier(r"C:\users\Natesh\Documents\motorbike.xml")
-# cycle_data =  cv2.CascadeClassifier(r"C:\users\Natesh\Documents\bicycle.xml")
+face_cascade = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__) , 'testdata' , "frontalface_default.xml")) ; 
+walker_data = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__) , 'testdata' , "pedestrian.xml")) ; 
+car_data = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__) , 'testdata' ,  "cars.xml")) ; 
 
 
-#cap = cv2.VideoCapture(r"cars2.avi")
-cap = cv2.VideoCapture(0) ;
+
+cap = cv2.VideoCapture(os.path.join(os.path.dirname(__file__) , 'testvideos' , "cars2.avi")) ; 
+# cap = cv2.VideoCapture(0) ;
 
 
 s = socket.socket() ;

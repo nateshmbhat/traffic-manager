@@ -58,6 +58,13 @@ def take_commands_from_app(sapp):
     take_commands_from_app(sapp) ;
 
 
+def getVideofileCap(videofile):
+    '''accepts the videofile to be present in testvideos directory . 
+    returns capture object of the video file data '''
+
+    cap = cv2.VideoCapture(os.path.join(os.path.dirname(__file__) , 'testvideos' , videofile)) ; 
+    return cap ; 
+
 
 def save_excel(average_vehicle_count):
     global total_number_red_bypasses
@@ -307,7 +314,7 @@ threading.Thread(target=wait_for_node_mcu, args=[snode]).start();
 
 # COMMENT THE BELOW TWO LINES WHEN PUTTING INTO INTEL EDISON
 temporary_Funtion_to_check_image_processing() ; #ONLY USE THIS IF YOU ARE CHECKING THE WORKING FROM YOUR PC AND NOT SENDING THE IMAGE DATA TO INTEL
-# exit(0) ;
+exit(0) ;
 
 
 
@@ -320,7 +327,7 @@ while (1):
 
         if not frame[0]:
             print("\n\n\n\n>>>>>\nVIDEO COMPLETED !!! \n>>>>>>") ;
-            cap = cv2.VideoCapture("cars1.avi") ;
+            cap = getVideofileCap('cars1.avi') ;
             continue ;
         else:
             frame = frame[1]
