@@ -1,9 +1,7 @@
 from time import sleep
-import numpy as np
 import socket
 import pickle
 import struct
-from pandas import DataFrame
 import threading
 import smtplib
 import time
@@ -36,24 +34,37 @@ global_frame = None;
 
 
 def take_commands_from_app(sapp):
-    app, addr = sapp.accept();
+    while(1):
+        try:
+            app, addr = sapp.accept();
 
-    global total_number_red_bypasses
-    global vehicles_count
+            global total_number_red_bypasses
+            global vehicles_count
 
-    print("Data received from Traffic Control system ");
+            print("Data received from Traffic Control system ");
+            break; 
+        except socket.timeout:
+            pass ; 
+    
 
     while (1):
-        msg = app.recv(4096).decode();
+        try:
+            msg = app.recv(4096).decode();
 
-        if not msg:
-            break ;
-        print("CLIENT SENT : {}".format(msg));
+            if not msg:
+                break ;
+            print("CLIENT SENT : {}".format(msg));
 
-        if "sendmail" in msg:
-            print("Sending mail ...")
-            mailsending();
-
+            if "sendmail" in msg:
+                print("Sending mail ...")
+                mailsending();
+        
+        except socket.timeout:
+            print("timeout") ; 
+        
+        except KeyboardInterrupt:
+            print("\nCancelled by user .") ; 
+            return ;
 
     take_commands_from_app(sapp) ;
 
@@ -180,20 +191,23 @@ def node_mcu_signals_manage():
     global flag_stop_usual_signal_loop
     global present_vehicle_count ;
     while (1):
-        if (not flag_stop_usual_signal_loop):
-            for i in ["A", "B", "C", "D"]:
-                node.send(i.encode());
-                sleep(5);
-                if flag_stop_usual_signal_loop:
-                    break;
-            continue;
+        try:
+            if (not flag_stop_usual_signal_loop):
+                for i in ["A", "B", "C", "D"]:
+                    node.send(i.encode());
+                    sleep(5);
+                    if flag_stop_usual_signal_loop:
+                        break;
+                continue;
 
-        print("\n\n\n--------------------\nHIGH TRAFFIC DETECTED !!!\n--------------------\n\n");
-        if(present_vehicle_count==6):
-            sleep(10);
-        if(present_vehicle_count==8):
-            sleep(13) ;
-        flag_stop_usual_signal_loop = False;
+            print("\n\n\n--------------------\nHIGH TRAFFIC DETECTED !!!\n--------------------\n\n");
+            if(present_vehicle_count==6):
+                sleep(10);
+            if(present_vehicle_count==8):
+                sleep(13) ;
+            flag_stop_usual_signal_loop = False;
+        except socket.timeout:
+            pass ; 
 
 
 
@@ -202,13 +216,24 @@ def node_mcu_signals_manage():
 def wait_for_node_mcu(snode):
     global node;
     print("waiting to connect");
-    node, addr = snode.accept();
-    print("NODE MCU CONNECTED  :\nAddress = {}\n\n".format(addr));
-    node.sendall("HEllo NOde MCU".encode());
-    print("Node MCU CONNECTED ");
+    while(1):
+        try:
+            node, addr = snode.accept();
+            print("NODE MCU CONNECTED  :\nAddress = {}\n\n".format(addr));
+            node.sendall("HEllo NOde MCU".encode());
+            print("Node MCU CONNECTED ");
 
-    threading.Thread(target=recvdata, args=[node]).start();
-    node_mcu_signals_manage();
+            threading.Thread(target=recvdata, args=[node]).start();
+            node_mcu_signals_manage();
+            return; 
+        
+        except socket.timeout:
+            pass ; 
+        
+        except KeyboardInterrupt:
+            print("\nCancelled . ")  ;
+            return ; 
+
 
 
 
@@ -289,6 +314,7 @@ def temporary_Funtion_to_check_image_processing():
 
 
 
+TIMEOUT = 0.1 ; 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
 s.connect(("10.255.255.255", 0));
@@ -301,6 +327,7 @@ snode.bind((myip, 34569));  # DATA SENDING TO NODE MCU
 
 sapp = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
 sapp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+sapp.settimeout(TIMEOUT) ; 
 sapp.bind((myip, 8888));
 
 print("\nNODE MCU server ip : {}\nPort : {}\n".format(myip, 34569));
@@ -308,13 +335,14 @@ print("\nAPP server ip : {} \nPort : {}\n".format(myip, 8888));
 
 sapp.listen(20);
 snode.listen(100)
+snode.settimeout(TIMEOUT) ; 
 
 threading.Thread(target=take_commands_from_app, args=[sapp]).start();
 threading.Thread(target=wait_for_node_mcu, args=[snode]).start();
 
 # COMMENT THE BELOW TWO LINES WHEN PUTTING INTO INTEL EDISON
-temporary_Funtion_to_check_image_processing() ; #ONLY USE THIS IF YOU ARE CHECKING THE WORKING FROM YOUR PC AND NOT SENDING THE IMAGE DATA TO INTEL
-exit(0) ;
+# temporary_Funtion_to_check_image_processing() ; #ONLY USE THIS IF YOU ARE CHECKING THE WORKING FROM YOUR PC AND NOT SENDING THE IMAGE DATA TO INTEL
+# exit(0) ;
 
 
 

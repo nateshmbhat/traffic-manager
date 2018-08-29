@@ -57,7 +57,6 @@ lxml==4.1.1
 Markdown==2.6.11
 MarkupSafe==1.0
 mccabe==0.6.1
-MechanicalSoup==0.10.0
 mistune==0.7.4
 more-itertools==3.2.0
 msgpack==0.5.6
