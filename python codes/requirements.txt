@@ -127,7 +127,7 @@ twilio==6.6.3
 twine==1.11.0
 Twisted==18.7.0
 uritemplate==3.0.0
-urllib3==1.21.1
+urllib3==1.26.5
 virtualenv==15.1.0
 virtualenv-clone==0.2.6
 w3lib==1.19.0
