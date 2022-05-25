@@ -91,7 +91,7 @@ pyfcm==1.4.2
 pyflakes==1.6.0
 Pygments==2.2.0
 PyHamcrest==1.9.0
-PyJWT==1.5.3
+PyJWT==2.4.0
 pylint==1.8.1
 pyparsing==2.2.0
 pypiwin32==219
