@@ -125,7 +125,7 @@ tqdm==4.23.4
 traitlets==4.3.2
 twilio==6.6.3
 twine==1.11.0
-Twisted==18.7.0
+Twisted==22.10.0
 uritemplate==3.0.0
 urllib3==1.21.1
 virtualenv==15.1.0
